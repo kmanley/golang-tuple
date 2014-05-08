@@ -1,6 +1,9 @@
 package tuple
 
-import "fmt"
+import (
+	"fmt"
+	_ "math"
+)
 
 type Tuple struct {
 	data []interface{}
@@ -36,24 +39,59 @@ func (t *Tuple) String() string {
 	return fmt.Sprintf("%v", t.data)
 }
 
-/*
-func main() {
-  fmt.Println("hi")
-
-  t1 := []int{1,2,3}
-  t2 := []int{2,3,4}
-
-  fmt.Println(t1, t2)
-
-
-  if t1 < t2 {
-    fmt.Println("yes")
-  }
-
-  t := NewTuple(3, 1, 2, 3)
-  t.Set(0, "kevin")
-  t.Set(1, "thomas")
-  t.Set(2, "manley")
-  fmt.Println(t.String())
+func (t *Tuple) PopLeft() interface{} {
+	if t.Len() < 1 {
+		return nil
+	}
+	ret := t.data[0]
+	t.data = t.data[1:]
+	return ret
 }
-*/
+
+func (t *Tuple) Eq(other *Tuple) bool {
+	if t.Len() != other.Len() {
+		return false
+	}
+	for i := 0; i < t.Len(); i++ {
+		if t.Get(i) != other.Get(i) {
+			return false
+		}
+	}
+	return true
+}
+
+func (t *Tuple) Ne(other *Tuple) bool {
+	return !t.Eq(other)
+}
+
+func (t *Tuple) Lt(other *Tuple) bool {
+	tlen, olen := t.Len(), other.Len()
+	var n int
+	if tlen < olen {
+		n = tlen
+	} else {
+		n = olen
+	}
+	for i := 0; i < n; i++ {
+		if t.Get(i) != other.Get(i) {
+			return true
+		}
+	}
+	// if we get here then they matched up to n
+	if tlen < olen {
+		return true
+	}
+	return false
+}
+
+func (t *Tuple) Le(other *Tuple) bool {
+	return t.Lt(other) || t.Eq(other)
+}
+
+func (t *Tuple) Gt(other *Tuple) bool {
+	return !t.Le(other)
+}
+
+func (t *Tuple) Ge(other *Tuple) bool {
+	return !t.Lt(other)
+}
