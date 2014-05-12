@@ -9,63 +9,92 @@ type Tuple struct {
 	data []interface{}
 }
 
-func NewTuple(n int, items ...interface{}) *Tuple {
+func NewTuple(n int) *Tuple {
 	t := &Tuple{}
 	t.data = make([]interface{}, n)
+	return t
+}
+
+func NewTupleFromSlice(slice []interface{}) *Tuple {
+	t := &Tuple{}
+	t.data = slice
+	return t
+}
+
+func NewTupleFromItems(items ...interface{}) *Tuple {
+	t := NewTuple(len(items))
 	for i, item := range items {
 		t.Set(i, item)
 	}
 	return t
 }
 
-func (t *Tuple) Len() int {
-	return len(t.data)
+func (this *Tuple) Len() int {
+	return len(this.data)
 }
 
-func (t *Tuple) Slice() []interface{} {
-	return t.data
+func (this *Tuple) Slice() []interface{} {
+	return this.data
 }
 
-func (t *Tuple) Set(n int, item interface{}) {
-	t.data[n] = item
+func (this *Tuple) Index(n int) int {
+	// allow negative indexing as in Python
+	if n < 0 {
+		n = this.Len() + n
+	}
+	return n
 }
 
-func (t *Tuple) Get(n int) interface{} {
-	item := t.data[n]
+func (this *Tuple) Set(n int, item interface{}) {
+	this.data[this.Index(n)] = item
+}
+
+func (this *Tuple) Get(n int) interface{} {
+	item := this.data[this.Index(n)]
 	return item
 }
 
-func (t *Tuple) String() string {
-	return fmt.Sprintf("%v", t.data)
+func (this *Tuple) String() string {
+	return fmt.Sprintf("%v", this.data)
 }
 
-func (t *Tuple) PopLeft() interface{} {
-	if t.Len() < 1 {
+func (this *Tuple) PopLeft() interface{} {
+	if this.Len() < 1 {
 		return nil
 	}
-	ret := t.data[0]
-	t.data = t.data[1:]
+	ret := this.data[0]
+	this.data = this.data[1:]
 	return ret
 }
 
-func (t *Tuple) Eq(other *Tuple) bool {
-	if t.Len() != other.Len() {
+func (this *Tuple) PopRight() interface{} {
+	if this.Len() < 1 {
+		return nil
+	}
+	idx := this.Index(-1)
+	ret := this.data[idx]
+	this.data = this.data[:idx]
+	return ret
+}
+
+func (this *Tuple) Eq(other *Tuple) bool {
+	if this.Len() != other.Len() {
 		return false
 	}
-	for i := 0; i < t.Len(); i++ {
-		if t.Get(i) != other.Get(i) {
+	for i := 0; i < this.Len(); i++ {
+		if this.Get(i) != other.Get(i) {
 			return false
 		}
 	}
 	return true
 }
 
-func (t *Tuple) Ne(other *Tuple) bool {
-	return !t.Eq(other)
+func (this *Tuple) Ne(other *Tuple) bool {
+	return !this.Eq(other)
 }
 
-func (t *Tuple) Lt(other *Tuple) bool {
-	tlen, olen := t.Len(), other.Len()
+func (this *Tuple) Lt(other *Tuple) bool {
+	tlen, olen := this.Len(), other.Len()
 	var n int
 	if tlen < olen {
 		n = tlen
@@ -73,7 +102,7 @@ func (t *Tuple) Lt(other *Tuple) bool {
 		n = olen
 	}
 	for i := 0; i < n; i++ {
-		if t.Get(i) != other.Get(i) {
+		if this.Get(i) != other.Get(i) {
 			return true
 		}
 	}
@@ -84,14 +113,14 @@ func (t *Tuple) Lt(other *Tuple) bool {
 	return false
 }
 
-func (t *Tuple) Le(other *Tuple) bool {
-	return t.Lt(other) || t.Eq(other)
+func (this *Tuple) Le(other *Tuple) bool {
+	return this.Lt(other) || this.Eq(other)
 }
 
-func (t *Tuple) Gt(other *Tuple) bool {
-	return !t.Le(other)
+func (this *Tuple) Gt(other *Tuple) bool {
+	return !this.Le(other)
 }
 
-func (t *Tuple) Ge(other *Tuple) bool {
-	return !t.Lt(other)
+func (this *Tuple) Ge(other *Tuple) bool {
+	return !this.Lt(other)
 }
