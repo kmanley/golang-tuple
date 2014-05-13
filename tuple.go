@@ -93,6 +93,7 @@ func (this *Tuple) Ne(other *Tuple) bool {
 	return !this.Eq(other)
 }
 
+// TODO: use Sortable (sp?) interface instead
 func (this *Tuple) Lt(other *Tuple) bool {
 	tlen, olen := this.Len(), other.Len()
 	var n int
