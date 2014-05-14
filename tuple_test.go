@@ -97,3 +97,50 @@ func TestEq(t *testing.T) {
 	assertEq(t, tup1.Eq(tup2), true)
 	assertEq(t, tup1.Ne(tup2), false)
 }
+
+func TestLt(t *testing.T) {
+	tup1 := NewTupleFromItems(10, 20, 30)
+	tup2 := NewTupleFromItems(10, 20, 30, 40)
+	tup3 := NewTupleFromItems(10, 20, 50)
+	tup4 := NewTupleFromItems(10, 20, 30)
+	assertEq(t, tup1.Lt(tup2), true)
+	assertEq(t, tup1.Lt(tup3), true)
+	assertEq(t, tup1.Lt(tup4), false)
+}
+
+func TestLe(t *testing.T) {
+	tup1 := NewTupleFromItems(10, 20, 30)
+	tup2 := NewTupleFromItems(10, 20, 30, 40)
+	tup3 := NewTupleFromItems(10, 20, 50)
+	tup4 := NewTupleFromItems(10, 20, 30)
+	assertEq(t, tup1.Le(tup2), true)
+	assertEq(t, tup1.Le(tup3), true)
+	assertEq(t, tup1.Le(tup4), true)
+}
+
+func TestGt(t *testing.T) {
+	tup1 := NewTupleFromItems(10, 20, 30)
+	tup2 := NewTupleFromItems(10, 20, 30, 40)
+	tup3 := NewTupleFromItems(10, 20, 50)
+	tup4 := NewTupleFromItems(10, 20, 30)
+	assertEq(t, tup1.Gt(tup2), false)
+	assertEq(t, tup1.Gt(tup3), false)
+	assertEq(t, tup1.Gt(tup4), false)
+}
+
+func TestGe(t *testing.T) {
+	tup1 := NewTupleFromItems(10, 20, 30)
+	tup2 := NewTupleFromItems(10, 20, 30, 40)
+	tup3 := NewTupleFromItems(10, 20, 50)
+	tup4 := NewTupleFromItems(10, 20, 30)
+	assertEq(t, tup1.Ge(tup2), false)
+	assertEq(t, tup1.Ge(tup3), false)
+	assertEq(t, tup1.Ge(tup4), true)
+}
+
+func TestReverse(t *testing.T) {
+	tup1 := NewTupleFromItems(1, 3, 5, 7, 9, 11, 13)
+	tup1.Reverse()
+	tup2 := NewTupleFromItems(13, 11, 9, 7, 5, 3, 1)
+	assertEq(t, tup1.Eq(tup2), true)
+}

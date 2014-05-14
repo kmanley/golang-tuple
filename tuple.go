@@ -77,6 +77,12 @@ func (this *Tuple) PopRight() interface{} {
 	return ret
 }
 
+func (this *Tuple) Reverse() {
+	for i, j := 0, this.Len()-1; i < j; i, j = i+1, j-1 {
+		this.data[i], this.data[j] = this.data[j], this.data[i]
+	}
+}
+
 func (this *Tuple) Eq(other *Tuple) bool {
 	if this.Len() != other.Len() {
 		return false
