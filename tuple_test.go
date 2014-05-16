@@ -144,3 +144,13 @@ func TestReverse(t *testing.T) {
 	tup2 := NewTupleFromItems(13, 11, 9, 7, 5, 3, 1)
 	assertEq(t, tup1.Eq(tup2), true)
 }
+
+func TestWTF(t *testing.T) {
+	tup1 := NewTupleFromItems(1, 3, 5)
+	tup2 := NewTupleFromItems("a", "b", "c")
+	if tup1.Eq(tup2) {
+		fmt.Println("equal")
+	} else {
+		fmt.Println("not equal")
+	}
+}

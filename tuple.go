@@ -3,6 +3,7 @@ package tuple
 import (
 	"fmt"
 	_ "math"
+	"reflect"
 )
 
 type Tuple struct {
@@ -98,6 +99,17 @@ func (this *Tuple) Reverse() {
 	}
 }
 
+// TODO:
+// func (this *Tuple) Zip(...*Tuple) Tuple {}
+// func (this *Tuple) Map(func) ? or Apply?
+// Dict() convert to Dict which I'm also working on
+// append - or better pushleft, pushright
+// insert
+// flatten?
+// group?
+// chunk?
+// coalesce
+
 // Returns True if this Tuple is elementwise equal to other
 func (this *Tuple) Eq(other *Tuple) bool {
 	if this.Len() != other.Len() {
@@ -127,7 +139,9 @@ func (this *Tuple) Lt(other *Tuple) bool {
 		n = olen
 	}
 	for i := 0; i < n; i++ {
-		if this.Get(i) != other.Get(i) {
+		lhs := this.Get(i)
+		typ := reflect.TypeOf(lhs)
+		if lhs.(typ) < other.Get(i).(typ) {
 			return true
 		}
 	}
