@@ -40,12 +40,12 @@ func TestSlice(t *testing.T) {
 	assertEq(t, fmt.Sprintf("%x", tup.Slice()), fmt.Sprintf("%x", []int{3, 2, 1}))
 }
 
-func TestIndex(t *testing.T) {
+func TestOffset(t *testing.T) {
 	tup := NewTuple(10)
-	assertEq(t, tup.Index(0), 0)
-	assertEq(t, tup.Index(5), 5)
-	assertEq(t, tup.Index(-1), 9)
-	assertEq(t, tup.Index(-2), 8)
+	assertEq(t, tup.Offset(0), 0)
+	assertEq(t, tup.Offset(5), 5)
+	assertEq(t, tup.Offset(-1), 9)
+	assertEq(t, tup.Offset(-2), 8)
 }
 
 func TestSet(t *testing.T) {
@@ -174,6 +174,16 @@ func TestReverse(t *testing.T) {
 	tup1.Reverse()
 	tup2 := NewTupleFromItems(13, 11, 9, 7, 5, 3, 1)
 	assertEq(t, tup1.Eq(tup2), true)
+}
+
+func TestIndex(t *testing.T) {
+	tup1 := NewTupleFromItems(10, 20, 30, 40, 30)
+	assertEq(t, tup1.Index(10, 0), 0)
+	assertEq(t, tup1.Index(20, 0), 1)
+	assertEq(t, tup1.Index(30, 0), 2)
+	assertEq(t, tup1.Index(30, 2), 2)
+	assertEq(t, tup1.Index(30, 3), 4)
+
 }
 
 /*

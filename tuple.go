@@ -5,6 +5,7 @@ Features:
  - helper functions like popleft, popright, reverse
 
 TODO:
+// standardize terminology "items" vs. "elems"
 // TODO:
 // func (this *Tuple) Zip(...*Tuple) Tuple {}
 // func (this *Tuple) Map(func) ? or Apply?
@@ -66,7 +67,7 @@ func (this *Tuple) Slice() []interface{} {
 
 // Convert n to an index into the internal slice.
 // Negative numbers are supported, e.g. -1 points to the last item
-func (this *Tuple) Index(n int) int {
+func (this *Tuple) Offset(n int) int {
 	// allow negative indexing as in Python
 	if n < 0 {
 		n = this.Len() + n
@@ -76,12 +77,12 @@ func (this *Tuple) Index(n int) int {
 
 // Set the item at index n
 func (this *Tuple) Set(n int, item interface{}) {
-	this.data[this.Index(n)] = item
+	this.data[this.Offset(n)] = item
 }
 
 // Get the item at index n
 func (this *Tuple) Get(n int) interface{} {
-	item := this.data[this.Index(n)]
+	item := this.data[this.Offset(n)]
 	return item
 }
 
@@ -107,7 +108,7 @@ func (this *Tuple) PopRight() interface{} {
 	if this.Len() < 1 {
 		return nil
 	}
-	idx := this.Index(-1)
+	idx := this.Offset(-1)
 	ret := this.data[idx]
 	this.data = this.data[:idx]
 	return ret
@@ -257,4 +258,13 @@ func (this *Tuple) Gt(other *Tuple) bool {
 // or equal to other
 func (this *Tuple) Ge(other *Tuple) bool {
 	return !this.Lt(other)
+}
+
+func (this *Tuple) Index(item interface{}, start int) int {
+	for i := start; i < this.Len(); i++ {
+		if TupleElemEq(this.Get(i), item) {
+			return i
+		}
+	}
+	return -1
 }
