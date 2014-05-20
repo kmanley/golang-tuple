@@ -96,6 +96,21 @@ func TestEq(t *testing.T) {
 	tup2.Set(2, 9)
 	assertEq(t, tup1.Eq(tup2), true)
 	assertEq(t, tup1.Ne(tup2), false)
+
+	tup5 := NewTupleFromItems(int16(100), int32(200), int64(300))
+	tup6 := NewTupleFromItems(int8(100), int16(200), int32(300))
+	assertEq(t, tup5.Eq(tup6), true)
+
+	tup7 := NewTupleFromItems(nil, nil, nil)
+	tup8 := NewTuple(3)
+	assertEq(t, tup7.Eq(tup8), true)
+
+	tup9 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 10), NewTupleFromItems(10, 20))
+	tup10 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 10), NewTupleFromItems(10, 20))
+	assertEq(t, tup9.Eq(tup10), true)
+	tup11 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(3, 10), NewTupleFromItems(10, 20))
+	assertEq(t, tup10.Eq(tup11), false)
+
 }
 
 func TestLt(t *testing.T) {
@@ -106,6 +121,22 @@ func TestLt(t *testing.T) {
 	assertEq(t, tup1.Lt(tup2), true)
 	assertEq(t, tup1.Lt(tup3), true)
 	assertEq(t, tup1.Lt(tup4), false)
+
+	tup5 := NewTupleFromItems(int16(90), int32(200), int64(300))
+	tup6 := NewTupleFromItems(int8(100), int16(200), int32(300))
+	assertEq(t, tup5.Lt(tup6), true)
+
+	tup7 := NewTuple(3)
+	tup8 := NewTupleFromItems(1, 2, 3)
+	assertEq(t, tup7.Lt(tup8), true)
+	assertEq(t, tup8.Lt(tup7), false)
+
+	tup9 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 10), NewTupleFromItems(10, 20))
+	tup10 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 10), NewTupleFromItems(10, 20))
+	assertEq(t, tup9.Lt(tup10), false)
+	tup11 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 9), NewTupleFromItems(10, 20))
+	assertEq(t, tup11.Lt(tup10), true)
+
 }
 
 func TestLe(t *testing.T) {
@@ -145,12 +176,12 @@ func TestReverse(t *testing.T) {
 	assertEq(t, tup1.Eq(tup2), true)
 }
 
+/*
 func TestWTF(t *testing.T) {
-	tup1 := NewTupleFromItems(1, 3, 5)
-	tup2 := NewTupleFromItems("a", "b", "c")
-	if tup1.Eq(tup2) {
-		fmt.Println("equal")
+	if nil == nil {
+		fmt.Println("nil equals nil")
 	} else {
-		fmt.Println("not equal")
+		fmt.Println("nil does not equal nil")
 	}
 }
+*/
