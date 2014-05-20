@@ -183,7 +183,16 @@ func TestIndex(t *testing.T) {
 	assertEq(t, tup1.Index(30, 0), 2)
 	assertEq(t, tup1.Index(30, 2), 2)
 	assertEq(t, tup1.Index(30, 3), 4)
+	assertEq(t, tup1.Index(100, 0), -1)
+}
 
+func TestCount(t *testing.T) {
+	tup1 := NewTupleFromItems(10, 20, 30, 40, 30, 20, 30, 40, 50)
+	assertEq(t, tup1.Count(10, 0), 1)
+	assertEq(t, tup1.Count(20, 0), 2)
+	assertEq(t, tup1.Count(30, 0), 3)
+	assertEq(t, tup1.Count(30, 5), 1)
+	assertEq(t, tup1.Count(120, 0), 0)
 }
 
 /*

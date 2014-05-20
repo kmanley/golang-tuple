@@ -268,3 +268,13 @@ func (this *Tuple) Index(item interface{}, start int) int {
 	}
 	return -1
 }
+
+func (this *Tuple) Count(item interface{}, start int) int {
+	ctr := 0
+	for i := start; i < this.Len(); i++ {
+		if TupleElemEq(this.Get(i), item) {
+			ctr += 1
+		}
+	}
+	return ctr
+}
