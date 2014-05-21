@@ -2,6 +2,7 @@ package tuple
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 )
 
@@ -137,6 +138,10 @@ func TestLt(t *testing.T) {
 	tup11 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 9), NewTupleFromItems(10, 20))
 	assertEq(t, tup11.Lt(tup10), true)
 
+	tup12 := NewTupleFromItems(10, 20, 30)
+	tup13 := NewTupleFromItems(1, 2, 3, 4, 5, 6, 7)
+	assertEq(t, tup12.Lt(tup13), false)
+	assertEq(t, tup13.Lt(tup12), true)
 }
 
 func TestLe(t *testing.T) {
@@ -193,6 +198,26 @@ func TestCount(t *testing.T) {
 	assertEq(t, tup1.Count(30, 0), 3)
 	assertEq(t, tup1.Count(30, 5), 1)
 	assertEq(t, tup1.Count(120, 0), 0)
+}
+
+func TestSortInternal(t *testing.T) {
+	tup1 := NewTupleFromItems(1, 9, 7, 2, 3, 10, 5, 4, 8, 6)
+	sort.Sort(tup1)
+	assertEq(t, tup1.Eq(NewTupleFromItems(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)), true)
+}
+
+func TestSortTuples(t *testing.T) {
+	tups := make([]*Tuple, 3)
+	tup0 := NewTupleFromItems(10, 20, 30, 40, 50)
+	tup1 := NewTupleFromItems(1, 2, 3, 4, 5, 6, 7)
+	tup2 := NewTupleFromItems(10, 20, 30)
+	tups[0] = tup0
+	tups[1] = tup1
+	tups[2] = tup2
+	sort.Sort(ByElem(tups))
+	assertEq(t, tups[0].Eq(tup1), true)
+	assertEq(t, tups[1].Eq(tup2), true)
+	assertEq(t, tups[2].Eq(tup0), true)
 }
 
 /*

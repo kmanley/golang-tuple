@@ -182,6 +182,23 @@ func (this *Tuple) Ne(other *Tuple) bool {
 	return !this.Eq(other)
 }
 
+// Support for sort.Sort
+func (this *Tuple) Less(i, j int) bool {
+	return TupleElemLt(this.Get(i), this.Get(j))
+}
+
+// Support for sort.Sort
+func (this *Tuple) Swap(i, j int) {
+	this.data[i], this.data[j] = this.data[j], this.data[i]
+}
+
+// Support for sorting slices of Tuples
+type ByElem []*Tuple
+
+func (a ByElem) Len() int           { return len(a) }
+func (a ByElem) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByElem) Less(i, j int) bool { return a[i].Lt(a[j]) }
+
 func TupleElemLt(lhsi interface{}, rhsi interface{}) bool {
 	lhsv, rhsv := reflect.ValueOf(lhsi), reflect.ValueOf(rhsi)
 	if lhsv.IsValid() && !rhsv.IsValid() {
@@ -234,6 +251,8 @@ func (this *Tuple) Lt(other *Tuple) bool {
 		lhsi, rhsi := this.Get(i), other.Get(i)
 		if TupleElemLt(lhsi, rhsi) {
 			return true
+		} else if !TupleElemEq(lhsi, rhsi) {
+			return false
 		}
 	}
 	// if we get here then they matched up to n
