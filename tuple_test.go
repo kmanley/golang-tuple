@@ -23,10 +23,10 @@ func TestNewTuple(t *testing.T) {
 }
 
 func TestNewTupleFromSlice(t *testing.T) {
-	slice := []interface{}{"a", "b", "c"}
+	slice := []interface{}{"a", 1, "c"}
 	tup := NewTupleFromSlice(slice)
 	assertEq(t, tup.Get(0), "a")
-	assertEq(t, tup.Get(1), "b")
+	assertEq(t, tup.Get(1), 1)
 	assertEq(t, tup.Get(2), "c")
 }
 
@@ -218,6 +218,14 @@ func TestSortTuples(t *testing.T) {
 	assertEq(t, tups[0].Eq(tup1), true)
 	assertEq(t, tups[1].Eq(tup2), true)
 	assertEq(t, tups[2].Eq(tup0), true)
+}
+
+func TestAppendTuple(t *testing.T) {
+	tup0 := NewTupleFromItems(1, 2, 3)
+	tup1 := NewTupleFromItems("a", "b", "c")
+	tup0.AppendTuple(tup1)
+	assertEq(t, tup0.Eq(NewTupleFromItems(1, 2, 3, "a", "b", "c")), true)
+
 }
 
 /*

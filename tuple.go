@@ -17,7 +17,6 @@ TODO:
 // chunk?
 // coalesce
 // append, extend
-// count, contains/index, sort
 
 */
 package tuple
@@ -121,6 +120,7 @@ func (this *Tuple) Reverse() {
 	}
 }
 
+// Returns true if the two items are logically "equal"
 func TupleElemEq(lhsi interface{}, rhsi interface{}) bool {
 	lhsv, rhsv := reflect.ValueOf(lhsi), reflect.ValueOf(rhsi)
 	// IsNil panics if type is not interface-y, so use IsValid instead
@@ -199,6 +199,7 @@ func (a ByElem) Len() int           { return len(a) }
 func (a ByElem) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByElem) Less(i, j int) bool { return a[i].Lt(a[j]) }
 
+// Returns true if the item lhsi is logically less than rhsi
 func TupleElemLt(lhsi interface{}, rhsi interface{}) bool {
 	lhsv, rhsv := reflect.ValueOf(lhsi), reflect.ValueOf(rhsi)
 	if lhsv.IsValid() && !rhsv.IsValid() {
@@ -238,7 +239,6 @@ func TupleElemLt(lhsi interface{}, rhsi interface{}) bool {
 }
 
 // Returns True if this Tuple is elementwise less than other
-// TODO: use Sortable (sp?) interface instead
 func (this *Tuple) Lt(other *Tuple) bool {
 	tlen, olen := this.Len(), other.Len()
 	var n int
@@ -279,6 +279,8 @@ func (this *Tuple) Ge(other *Tuple) bool {
 	return !this.Lt(other)
 }
 
+// Returns the position of item in the tuple. The search
+// starts from position start. Returns -1 if item is not found
 func (this *Tuple) Index(item interface{}, start int) int {
 	for i := start; i < this.Len(); i++ {
 		if TupleElemEq(this.Get(i), item) {
@@ -288,6 +290,8 @@ func (this *Tuple) Index(item interface{}, start int) int {
 	return -1
 }
 
+// Returns the number of occurrences of item in the tuple,
+// given starting position start.
 func (this *Tuple) Count(item interface{}, start int) int {
 	ctr := 0
 	for i := start; i < this.Len(); i++ {
@@ -296,4 +300,21 @@ func (this *Tuple) Count(item interface{}, start int) int {
 		}
 	}
 	return ctr
+}
+
+/*
+func (this *Tuple) Insert(other *Tuple) {
+	this.data = append(this.data, other.data)
+
+
+}
+*/
+
+func (this *Tuple) AppendTuple(other *Tuple) {
+	this.data = append(this.data, other.data...)
+}
+
+func (this *Tuple) AppendItems(items ...interface{}) {
+	other := NewTupleFromItems(items...)
+	this.AppendTuple(other)
 }
