@@ -54,6 +54,13 @@ func NewTupleFromItems(items ...interface{}) *Tuple {
 	return t
 }
 
+// Returns a new tuple with a copy of this tuple's data
+func (this *Tuple) Copy() *Tuple {
+	t := NewTuple(this.Len())
+	copy(t.data, this.data)
+	return t
+}
+
 // Returns the number of elements in the Tuple
 func (this *Tuple) Len() int {
 	return len(this.data)
@@ -127,6 +134,8 @@ func TupleElemEq(lhsi interface{}, rhsi interface{}) bool {
 	if lhsv.IsValid() != rhsv.IsValid() {
 		return false
 	}
+	// TODO: this currently blows up if lhs can't be converted to same
+	// type as rhs (e.g. int vs. string)
 	switch lhsi.(type) {
 	case nil:
 		if rhsv.IsValid() {
@@ -302,19 +311,25 @@ func (this *Tuple) Count(item interface{}, start int) int {
 	return ctr
 }
 
-/*
-func (this *Tuple) Insert(other *Tuple) {
-	this.data = append(this.data, other.data)
-
-
-}
-*/
-
-func (this *Tuple) AppendTuple(other *Tuple) {
-	this.data = append(this.data, other.data...)
+// Inserts data from other table into this, starting at offset start
+func (this *Tuple) Insert(start int, other *Tuple) {
+	this.InsertItems(start, other.data...)
 }
 
+// Inserts items into this tuple, starting from offset start
+func (this *Tuple) InsertItems(start int, items ...interface{}) {
+	start = this.Offset(start)
+	rhs := this.Copy().data[start:]
+	this.data = append(this.data[:start], items...)
+	this.data = append(this.data, rhs...)
+}
+
+// Appends all elements from other tuple to this
+func (this *Tuple) Append(other *Tuple) {
+	this.AppendItems(other.data...)
+}
+
+// Appends one or more items to end of data
 func (this *Tuple) AppendItems(items ...interface{}) {
-	other := NewTupleFromItems(items...)
-	this.AppendTuple(other)
+	this.data = append(this.data, items...)
 }

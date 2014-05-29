@@ -36,6 +36,15 @@ func TestNewTupleFromItems(t *testing.T) {
 	assertEq(t, tup.Get(-1), 400)
 }
 
+func TestCopy(t *testing.T) {
+	t1 := NewTupleFromItems(1, 2, 3)
+	t2 := t1.Copy()
+	assertEq(t, t1.Eq(t2), true)
+	t1.Set(1, 20)
+	assertEq(t, t1.Eq(NewTupleFromItems(1, 20, 3)), true)
+	assertEq(t, t2.Eq(NewTupleFromItems(1, 2, 3)), true)
+}
+
 func TestSlice(t *testing.T) {
 	tup := NewTupleFromItems(3, 2, 1)
 	assertEq(t, fmt.Sprintf("%x", tup.Slice()), fmt.Sprintf("%x", []int{3, 2, 1}))
@@ -220,11 +229,28 @@ func TestSortTuples(t *testing.T) {
 	assertEq(t, tups[2].Eq(tup0), true)
 }
 
-func TestAppendTuple(t *testing.T) {
+func TestAppend(t *testing.T) {
 	tup0 := NewTupleFromItems(1, 2, 3)
 	tup1 := NewTupleFromItems("a", "b", "c")
-	tup0.AppendTuple(tup1)
+	tup0.Append(tup1)
 	assertEq(t, tup0.Eq(NewTupleFromItems(1, 2, 3, "a", "b", "c")), true)
+	tup1.AppendItems("d", "e", "f")
+	assertEq(t, tup1.Eq(NewTupleFromItems("a", "b", "c", "d", "e", "f")), true)
+	// TODO: try with reference elements, show they are not deep copied during the append
+}
+
+func TestInsert(t *testing.T) {
+	tup0 := NewTupleFromItems(1, 2, 3)
+	tup1 := NewTupleFromItems("a", "b", "c")
+	tup0.Insert(0, tup1)
+	assertEq(t, tup0.Eq(NewTupleFromItems("a", "b", "c", 1, 2, 3)), true)
+
+	tup2 := NewTupleFromItems(10, 20)
+	tup1.Insert(1, tup2)
+	assertEq(t, tup1.Eq(NewTupleFromItems("a", 10, 20, "b", "c")), true)
+
+	tup1.Insert(-1, NewTupleFromItems("x", "y", "z"))
+	assertEq(t, tup1.Eq(NewTupleFromItems("a", 10, 20, "b", "x", "y", "z", "c")), true)
 
 }
 
