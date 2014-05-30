@@ -12,6 +12,18 @@ func assertEq(t *testing.T, lhs interface{}, rhs interface{}) {
 	}
 }
 
+func assertEqTuple(t *testing.T, lhs *Tuple, rhs *Tuple) {
+	if lhs.Ne(rhs) {
+		t.Error(lhs, ".Ne(", rhs, ")")
+	}
+}
+
+func assertNeTuple(t *testing.T, lhs *Tuple, rhs *Tuple) {
+	if lhs.Eq(rhs) {
+		t.Error(lhs, ".Eq(", rhs, ")")
+	}
+}
+
 func TestNewTuple(t *testing.T) {
 	tup := NewTuple(3)
 	n := tup.Len()
@@ -39,15 +51,45 @@ func TestNewTupleFromItems(t *testing.T) {
 func TestCopy(t *testing.T) {
 	t1 := NewTupleFromItems(1, 2, 3)
 	t2 := t1.Copy()
-	assertEq(t, t1.Eq(t2), true)
+	assertEqTuple(t, t1, t2)
 	t1.Set(1, 20)
-	assertEq(t, t1.Eq(NewTupleFromItems(1, 20, 3)), true)
-	assertEq(t, t2.Eq(NewTupleFromItems(1, 2, 3)), true)
+	assertEqTuple(t, t1, NewTupleFromItems(1, 20, 3))
+	assertEqTuple(t, t2, NewTupleFromItems(1, 2, 3))
+}
+
+func TestData(t *testing.T) {
+	tup := NewTupleFromItems(3, 2, 1)
+	assertEq(t, fmt.Sprintf("%x", tup.Data()), fmt.Sprintf("%x", []int{3, 2, 1}))
 }
 
 func TestSlice(t *testing.T) {
-	tup := NewTupleFromItems(3, 2, 1)
-	assertEq(t, fmt.Sprintf("%x", tup.Slice()), fmt.Sprintf("%x", []int{3, 2, 1}))
+	tup := NewTupleFromItems(100, 200, 300, 400)
+	assertEqTuple(t, tup.Slice(0, 0), NewTuple(0))
+	assertEqTuple(t, tup.Slice(0, 1), NewTupleFromItems(100))
+	assertEqTuple(t, tup.Slice(0, 3), NewTupleFromItems(100, 200, 300))
+	assertEqTuple(t, tup.Slice(0, 10), NewTupleFromItems(100, 200, 300, 400))
+	assertEqTuple(t, tup.Slice(1, 2), NewTupleFromItems(200))
+	assertEqTuple(t, tup.Slice(2, 4), NewTupleFromItems(300, 400))
+	assertEqTuple(t, tup.Slice(4, 4), NewTuple(0))
+	assertEqTuple(t, tup.Slice(10, 100), NewTuple(0))
+	assertEqTuple(t, tup.Slice(-1, 100), NewTupleFromItems(400))
+	assertEqTuple(t, tup.Slice(-3, -1), NewTupleFromItems(200, 300))
+}
+
+func TestLeft(t *testing.T) {
+	tup := NewTupleFromItems(100, 200, 300, 400)
+	assertEqTuple(t, tup.Left(0), NewTuple(0))
+	assertEqTuple(t, tup.Left(1), NewTupleFromItems(100))
+	assertEqTuple(t, tup.Left(3), NewTupleFromItems(100, 200, 300))
+	assertEqTuple(t, tup.Left(10), NewTupleFromItems(100, 200, 300, 400))
+}
+
+func TestRight(t *testing.T) {
+	tup := NewTupleFromItems(100, 200, 300, 400)
+	assertEqTuple(t, tup.Right(0), NewTuple(0))
+	assertEqTuple(t, tup.Right(1), NewTupleFromItems(400))
+	assertEqTuple(t, tup.Right(3), NewTupleFromItems(200, 300, 400))
+	assertEqTuple(t, tup.Right(10), NewTupleFromItems(100, 200, 300, 400))
 }
 
 func TestOffset(t *testing.T) {
@@ -87,7 +129,7 @@ func TestPopLeft(t *testing.T) {
 	x := tup.PopLeft()
 	assertEq(t, x, 2)
 	assertEq(t, tup.Len(), 3)
-	assertEq(t, tup.Eq(NewTupleFromItems(4, 6, 8)), true)
+	assertEqTuple(t, tup, NewTupleFromItems(4, 6, 8))
 }
 
 func TestPopRight(t *testing.T) {
@@ -95,7 +137,7 @@ func TestPopRight(t *testing.T) {
 	x := tup.PopRight()
 	assertEq(t, x, 7)
 	assertEq(t, tup.Len(), 3)
-	assertEq(t, tup.Eq(NewTupleFromItems(1, 3, 5)), true)
+	assertEqTuple(t, tup, NewTupleFromItems(1, 3, 5))
 }
 
 func TestEq(t *testing.T) {
@@ -104,22 +146,22 @@ func TestEq(t *testing.T) {
 	tup2.Set(0, 3)
 	tup2.Set(1, 6)
 	tup2.Set(2, 9)
-	assertEq(t, tup1.Eq(tup2), true)
+	assertEqTuple(t, tup1, tup2)
 	assertEq(t, tup1.Ne(tup2), false)
 
 	tup5 := NewTupleFromItems(int16(100), int32(200), int64(300))
 	tup6 := NewTupleFromItems(int8(100), int16(200), int32(300))
-	assertEq(t, tup5.Eq(tup6), true)
+	assertEqTuple(t, tup5, tup6)
 
 	tup7 := NewTupleFromItems(nil, nil, nil)
 	tup8 := NewTuple(3)
-	assertEq(t, tup7.Eq(tup8), true)
+	assertEqTuple(t, tup7, tup8)
 
 	tup9 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 10), NewTupleFromItems(10, 20))
 	tup10 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(5, 10), NewTupleFromItems(10, 20))
-	assertEq(t, tup9.Eq(tup10), true)
+	assertEqTuple(t, tup9, tup10)
 	tup11 := NewTupleFromItems(NewTupleFromItems(1, 2), NewTupleFromItems(3, 10), NewTupleFromItems(10, 20))
-	assertEq(t, tup10.Eq(tup11), false)
+	assertNeTuple(t, tup10, tup11)
 
 }
 
@@ -187,7 +229,7 @@ func TestReverse(t *testing.T) {
 	tup1 := NewTupleFromItems(1, 3, 5, 7, 9, 11, 13)
 	tup1.Reverse()
 	tup2 := NewTupleFromItems(13, 11, 9, 7, 5, 3, 1)
-	assertEq(t, tup1.Eq(tup2), true)
+	assertEqTuple(t, tup1, tup2)
 }
 
 func TestIndex(t *testing.T) {
@@ -212,7 +254,7 @@ func TestCount(t *testing.T) {
 func TestSortInternal(t *testing.T) {
 	tup1 := NewTupleFromItems(1, 9, 7, 2, 3, 10, 5, 4, 8, 6)
 	sort.Sort(tup1)
-	assertEq(t, tup1.Eq(NewTupleFromItems(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)), true)
+	assertEqTuple(t, tup1, NewTupleFromItems(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
 }
 
 func TestSortTuples(t *testing.T) {
@@ -224,18 +266,18 @@ func TestSortTuples(t *testing.T) {
 	tups[1] = tup1
 	tups[2] = tup2
 	sort.Sort(ByElem(tups))
-	assertEq(t, tups[0].Eq(tup1), true)
-	assertEq(t, tups[1].Eq(tup2), true)
-	assertEq(t, tups[2].Eq(tup0), true)
+	assertEqTuple(t, tups[0], tup1)
+	assertEqTuple(t, tups[1], tup2)
+	assertEqTuple(t, tups[2], tup0)
 }
 
 func TestAppend(t *testing.T) {
 	tup0 := NewTupleFromItems(1, 2, 3)
 	tup1 := NewTupleFromItems("a", "b", "c")
 	tup0.Append(tup1)
-	assertEq(t, tup0.Eq(NewTupleFromItems(1, 2, 3, "a", "b", "c")), true)
+	assertEqTuple(t, tup0, NewTupleFromItems(1, 2, 3, "a", "b", "c"))
 	tup1.AppendItems("d", "e", "f")
-	assertEq(t, tup1.Eq(NewTupleFromItems("a", "b", "c", "d", "e", "f")), true)
+	assertEqTuple(t, tup1, NewTupleFromItems("a", "b", "c", "d", "e", "f"))
 	// TODO: try with reference elements, show they are not deep copied during the append
 }
 
@@ -243,23 +285,12 @@ func TestInsert(t *testing.T) {
 	tup0 := NewTupleFromItems(1, 2, 3)
 	tup1 := NewTupleFromItems("a", "b", "c")
 	tup0.Insert(0, tup1)
-	assertEq(t, tup0.Eq(NewTupleFromItems("a", "b", "c", 1, 2, 3)), true)
+	assertEqTuple(t, tup0, NewTupleFromItems("a", "b", "c", 1, 2, 3))
 
 	tup2 := NewTupleFromItems(10, 20)
 	tup1.Insert(1, tup2)
-	assertEq(t, tup1.Eq(NewTupleFromItems("a", 10, 20, "b", "c")), true)
+	assertEqTuple(t, tup1, NewTupleFromItems("a", 10, 20, "b", "c"))
 
 	tup1.Insert(-1, NewTupleFromItems("x", "y", "z"))
-	assertEq(t, tup1.Eq(NewTupleFromItems("a", 10, 20, "b", "x", "y", "z", "c")), true)
-
+	assertEqTuple(t, tup1, NewTupleFromItems("a", 10, 20, "b", "x", "y", "z", "c"))
 }
-
-/*
-func TestWTF(t *testing.T) {
-	if nil == nil {
-		fmt.Println("nil equals nil")
-	} else {
-		fmt.Println("nil does not equal nil")
-	}
-}
-*/

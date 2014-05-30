@@ -1,11 +1,13 @@
 /*
 Features:
- - python-style indexing
+ - support for python-style negative indexes
  - python-style comparison
  - helper functions like popleft, popright, reverse
 
 TODO:
 // standardize terminology "items" vs. "elems"
+// rename to golang-list? it's more like a python list than python tuple since
+//   it's mutable
 // TODO:
 // func (this *Tuple) Zip(...*Tuple) Tuple {}
 // func (this *Tuple) Map(func) ? or Apply?
@@ -29,6 +31,22 @@ import (
 
 type Tuple struct {
 	data []interface{}
+}
+
+func max(lhs int, rhs int) int {
+	if lhs > rhs {
+		return lhs
+	} else {
+		return rhs
+	}
+}
+
+func min(lhs int, rhs int) int {
+	if lhs < rhs {
+		return lhs
+	} else {
+		return rhs
+	}
 }
 
 // Creates a new empty Tuple of length n
@@ -67,8 +85,30 @@ func (this *Tuple) Len() int {
 }
 
 // Returns the internal slice
-func (this *Tuple) Slice() []interface{} {
+func (this *Tuple) Data() []interface{} {
 	return this.data
+}
+
+// Returns a new tuple with copy of n leftmost items
+func (this *Tuple) Left(n int) *Tuple {
+	return this.Slice(0, n)
+}
+
+// Returns a new tuple with copy of n rightmost items
+func (this *Tuple) Right(n int) *Tuple {
+	length := this.Len()
+	n = max(0, length-n)
+	return this.Slice(n, length)
+}
+
+// Returns a new tuple with slice of this tuple's data
+func (this *Tuple) Slice(start int, end int) *Tuple {
+	c := this.Copy()
+	max := this.Len()
+	start = min(c.Offset(start), max)
+	end = min(c.Offset(end), max)
+	c.data = c.data[start:end]
+	return c
 }
 
 // Convert n to an index into the internal slice.
